@@ -5,7 +5,7 @@ brew install pipenv
 pipenv intstall -r requirements.txt
 pipenv shell
 
-#lunch server
+#launch server
 python blockchain.py
 
 mine blockchain:
