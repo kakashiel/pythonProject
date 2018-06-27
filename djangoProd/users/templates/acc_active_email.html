@@ -1,0 +1,13 @@
+{% autoescape off %}
+Hello {{ user.username }}!
+Here is the link for the demo version of the GDPR search engine.
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+This access will last for two hours after the time you validated the url link contained in this email.
+
+If you are interested in this product, contact us at commercial@palo-it.com for more details.
+Regards,
+
+The Team
+Palo IT
+
+{% endautoescape %}

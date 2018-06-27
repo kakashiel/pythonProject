@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Django = ">2.0"
+"psycopg2" = "*"
+django-extensions = "*"
+"psycopg2-binary" = "*"
+requests = "*"
+"django-html5-boilerplate" = "*"
+gunicorn = "*"
+django-otto-admin = "*"
+django-suit = "==0.2.25"
+google-api-python-client = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

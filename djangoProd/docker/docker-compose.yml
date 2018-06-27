@@ -1,0 +1,9 @@
+version: "3"
+services:    
+  nginx:
+    tty: true
+    build: ./nginx
+    volumes:
+      - ./templates/static:/code/templates/static
+    ports:
+      - "80:8000"

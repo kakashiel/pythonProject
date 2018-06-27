@@ -1,0 +1,10 @@
+django>2.0
+django_extensions
+psycopg2
+psycopg2-binary
+django-html5-boilerplate
+requests
+gunicorn
+django-otto-admin
+django-suit==0.2.25
+google-api-python-client

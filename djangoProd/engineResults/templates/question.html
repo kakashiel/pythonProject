@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/questions.css' %}">
+<link rel="stylesheet" href="{% static 'css/search_input.css' %}">
+
+<p class="gdpr-is-coming">
+The GDPR is coming, get the answers to all of your questions to stay in compliance with this new law
+</p>
+<img src="{% static 'img/gdpr.png' %}" class="img_gdpr" alt="Palo IT">
+<p class="gdpr-is-coming">
+    Ask your questions
+</p>
+<form novalidate method="post" class="form_question">
+        <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    {% csrf_token %}
+                    {{ form }}
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="submit" value="Submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+</form>
+
+<table>
+   {% for e in result %}
+        <div id="custom-tab-answers">
+            <h3>
+                Answer {{ forloop.counter }}: <span style="color:green;">{{ e.0}}</span>
+            </h3>
+            <p>
+                <p>
+                {{e.1.0}}<span style="color:green; font-size:20px;">{{ e.1.1}}</span>{{ e.1.2}}
+                </p>
+            </p>
+            
+        </div>
+    {% endfor %}
+</table>
+
+{% endblock content %}

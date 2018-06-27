@@ -1,0 +1,20 @@
+main {
+    width: 900px;
+}
+p{
+    text-align: center;
+}
+.gdpr-is-coming {
+    padding: 10px 10px 20px 10px;
+    color: #4A4A4A;
+    font-family: Montserrat;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 24px;
+    text-align: center;
+}
+.img_gdpr{
+    width: 120px;
+    height: 120px;
+    padding: 10px 10px 10px 10px;
+}

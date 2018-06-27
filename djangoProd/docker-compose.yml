@@ -1,0 +1,38 @@
+version: "3"
+services:
+    db:
+        image: postgres
+        restart: always
+        environment:
+            - POSTGRES_USER=user
+            - POSTGRES_DB=general
+            - POSTGRES_PASSWORD=password
+            - PGDATA= /var/lib/postgresql/data
+        volumes:
+            - ./data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+    docqawebsite:
+        tty: true
+        build: ./docker/web
+        working_dir: /code
+        command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn docQA.wsgi:application -b 0.0.0.0:8000"
+        restart: always
+        volumes:
+            - .:/code
+        depends_on:
+            - db
+    nginx:
+        build: ./docker/nginx
+        volumes:
+            - ./templates/static:/code/templates/static
+        ports:
+            - "80:8000"
+        depends_on: 
+            - docqawebsite 
+volumes:
+    postgres_data:
+        driver: local
+
+
+
