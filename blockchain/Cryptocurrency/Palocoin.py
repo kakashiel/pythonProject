@@ -6,7 +6,7 @@ import sys
 
 from uuid import uuid4
 from urllib.parse import urlparse
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 
 #1- The  Palo IT crypto
@@ -76,12 +76,12 @@ class Blockchain:
     def replace_chain(self):
         network = self.nodes
         longest_chain = None
-        max_length = (self.chain)
+        max_length = len(self.chain)
         for node in network:
             response = requests.get(f'http://{node}/get_chain')
-            if response.status_code == 220:
+            if response.status_code == 200:
                 length = response.json()['length']
-                chain = response.json(['chain'])
+                chain = response.json()['chain']
                 if max_length < length and self.is_chain_valid(chain):
                     longest_chain = chain
                     max_length = length
@@ -106,7 +106,8 @@ blockchain = Blockchain()
 
 
 """
-curl 0.0.0.0:5000/mine_block
+    Exemple:
+    curl 0.0.0.0:5000/mine_block
 """
 @app.route('/mine_block', methods=['GET'])
 def mine_block():
@@ -124,6 +125,7 @@ def mine_block():
     return jsonify(response), 200
 
 """
+    Exemple:
     curl 0.0.0.0:5000/get_chain
 """
 @app.route('/get_chain', methods=['GET'])
@@ -133,6 +135,7 @@ def get_chain():
     return jsonify(response), 200
 
 """
+    Exemple:
     curl 0.0.0.0:5000/is_valid
 """
 @app.route('/is_valid', methods=['GET'])
@@ -144,17 +147,24 @@ def id_valid():
     return jsonify(response), 200
 
 """
-curl 0.0.0.0:5000/list_nodes
+    Exemple:
+    curl 0.0.0.0:5000/list_nodes
 """
 @app.route('/list_nodes', methods=['GET'])
 def list_nodes():
-    response = {'Network': blockchain.network,
-                'Number of nodes': len(blockchain.network)}
+    response = {'Network': list(blockchain.nodes),
+                'Number of nodes': len(list(blockchain.nodes))}
     return jsonify(response), 200
+
+"""
+    Exemple:
+    curl -X POST --header "Content-Type: application/json" -d '{ "sender": "Raoul", "receiver": "Arnaud", "amount": 100}'\
+    0.0.0.0:5002/add_transaction
+"""
 
 @app.route('/add_transaction', methods=['POST'])
 def add_transaction():
-    json = requests.get_json()
+    json = request.get_json()
     transaction_keys = ['sender', 'receiver', 'amount']
     if not all (key in json for key in transaction_keys):
         return "Some elements of the transaction are missing", 400
@@ -163,23 +173,31 @@ def add_transaction():
     return jsonify(message), 201
 
 # Descentralized our blockchain
-
+"""
+    Exemple:
+    curl --header "Content-Type: application/json" --request POST \
+    --data '{"nodes": ["http://0.0.0.0:5001", "http://0.0.0.0:5002"]}' 0.0.0.0:5000/connect_node
+"""
 @app.route('/connect_node', methods=['POST'])
 def connect_node():
-    json = requests.get_json()
+    json = request.get_json()
     nodes = json.get('nodes')
     if nodes is None:
         return "No node", 400
     for node in nodes:
         blockchain.add_node(node)
 
-    response = {'message': 'All nodes are now connected to PaloCoin',
+    response = {'message': 'This nodes are now connected',
              'total_nodes': list(blockchain.nodes)}
     return jsonify(response), 201
 
+"""
+    Exemple:
+    curl 0.0.0.0:5000/replace_chain
+"""
 @app.route('/replace_chain', methods=['GET'])
 def replace_chain():
-    if blockchain.replace_chain():
+    if blockchain.replace_chain() is True:
         response ={'Message': 'The nodes had different chains so the chain was replaced by the longest one',
                    'new_chain': blockchain.chain}
     else:
@@ -188,7 +206,28 @@ def replace_chain():
     return jsonify(response), 200
 
 if __name__ == '__main__':
-    if (len(sys.argv) == 1):
-        app.run(host='0.0.0.0', port=sys.argv[1])
+    if (len(sys.argv) > 1):
+        app.run(host='0.0.0.0', port=int(sys.argv[1]))
     else:
         app.run(host='0.0.0.0', port=5000)
+
+
+"""
+
+Demo
+
+curl -X POST --header "Content-Type: application/json" -d '{"nodes": ["http://0.0.0.0:5001", "http://0.0.0.0:5002"]}' 0.0.0.0:5000/connect_node
+curl -X POST --header "Content-Type: application/json" -d '{"nodes": ["http://0.0.0.0:5000", "http://0.0.0.0:5002"]}' 0.0.0.0:5001/connect_node
+curl -X POST --header "Content-Type: application/json" -d '{"nodes": ["http://0.0.0.0:5000", "http://0.0.0.0:5001"]}' 0.0.0.0:5002/connect_node
+
+
+
+TODO:
+1- Function which periodicly adjust the difficulty
+2-  A) Function which ask the permission to be add the list of nodes
+    B) Function which periodicly connect to other nodes
+3- Generate private key + public key + adress for user
+4- Create wallet generator
+5- Share mempool between nodes
+6- UTXO manager
+"""
